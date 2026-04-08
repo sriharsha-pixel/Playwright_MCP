@@ -2,16 +2,29 @@
   "name": "playwrightmcp",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {},
-  "keywords": [],
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "test:chrome": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:webkit": "playwright test --project=webkit",
+    "test:report": "playwright show-report",
+    "test:headed:chrome": "playwright test --project=chromium --headed"
+  },
+  "keywords": ["e2e", "testing", "playwright", "pom"],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Playwright E2E testing with Page Object Model pattern",
   "devDependencies": {
     "@playwright/test": "^1.58.2",
     "@types/node": "^25.5.0"
   },
   "dependencies": {
-    "@playwright/mcp": "^0.0.68"
+    "@playwright/mcp": "^0.0.68",
+    "dotenv": "^16.3.1"
   }
 }
+

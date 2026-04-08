@@ -1,32 +1,35 @@
 import { BasePage } from './BasePage.js';
+import { CONFIG } from '../config/config.js';
 
 /**
- * Home Page Object
+ * HomePage Object
  * Contains locators and methods for home page interactions
  */
 export class HomePage extends BasePage {
-  // Locators
-  get searchInput() {
-    return 'input[name="search_query"]';
-  }
-
-  get searchButton() {
-    return 'button[name="submit_search"]';
-  }
-
-  get productsList() {
-    return '.product-container';
-  }
-
-  get productName() {
-    return '.product-name';
+  constructor(page) {
+    super(page);
+    
+    // ==================== Locators ====================
+    this.searchInput = page.locator('input[name="search_query"]');
+    this.searchButton = page.locator('button[name="submit_search"]');
+    this.productsList = page.locator('.product-container');
+    this.productName = page.locator('.product-name');
   }
 
   /**
    * Navigate to home page
    */
   async goToHomePage() {
-    await this.navigateTo('http://www.automationpractice.pl/index.php');
+    await this.page.goto(CONFIG.baseUrl);
+    await this.page.waitForLoadState('networkidle');
+  }
+
+  /**
+   * Verify landing page URL
+   * @param {string} searchTerm - The term to verify in URL
+   */
+  async verifyLandingPage(searchTerm) {
+    return this.page.url().includes(searchTerm);
   }
 
   /**
@@ -34,9 +37,28 @@ export class HomePage extends BasePage {
    * @param {string} searchTerm - The product to search for
    */
   async searchProduct(searchTerm) {
-    await this.fillInput(this.searchInput, searchTerm);
-    await this.pressKey(this.searchInput, 'Enter');
-    await this.waitForPageLoad('networkidle');
+    await this.searchInput.fill(searchTerm);
+    await this.searchButton.click();
+    await this.page.waitForLoadState('networkidle');
+  }
+
+  /**
+   * Get all product names from search results
+   */
+  async getAllProductNames() {
+    await this.page.waitForLoadState('networkidle');
+    const products = await this.productName.allTextContents();
+    return products;
+  }
+
+  /**
+   * Click on a product by name
+   * @param {string} productName - The product name to click
+   */
+  async clickOnProduct(productName) {
+    const productLocator = this.page.locator(`a:has-text("${productName}")`);
+    await productLocator.click();
+    await this.page.waitForLoadState('networkidle');
   }
 
   /**
@@ -49,21 +71,9 @@ export class HomePage extends BasePage {
   }
 
   /**
-   * Get all product names from search results
+   * Get total number of products
    */
-  async getAllProductNames() {
-    await this.waitForPageLoad('networkidle');
-    const products = await this.page.locator(this.productName).allTextContents();
-    return products;
-  }
-
-  /**
-   * Click on a product by name
-   * @param {string} productName - The product name to click
-   */
-  async clickOnProduct(productName) {
-    const productLocator = this.page.locator(`a:has-text("${productName}")`);
-    await productLocator.click();
-    await this.waitForPageLoad('networkidle');
+  async getProductCount() {
+    return await this.productName.count();
   }
 }

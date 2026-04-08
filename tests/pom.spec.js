@@ -1,48 +1,63 @@
-// @ts-check
 import { test, expect } from '@playwright/test';
+import { LoginPage } from '../pages/LoginPage.js';
+import { DashboardPage } from '../pages/DashboardPage.js';
 import { HomePage } from '../pages/HomePage.js';
 import { ProductPage } from '../pages/ProductPage.js';
+import { CONFIG } from '../config/config.js';
 
 test.describe('Automation Practice - E-commerce Tests', () => {
-  /** @type {HomePage} */
-  let homePage;
+  let authPage;
+  let loginPage;
+  let dashboardPage;
 
-  test.beforeEach(async ({ page }) => {
-    // Initialize page objects
-    homePage = new HomePage(page);
+  test.beforeAll(async ({ browser }) => {
+    // Login once and save context for reuse
+    const context = await browser.newContext();
+    authPage = await context.newPage();
     
-    // Navigate to home page
-    await homePage.goToHomePage();
+    loginPage = new LoginPage(authPage);
+    dashboardPage = new DashboardPage(authPage);
+
+    // Perform login once
+    await authPage.goto(CONFIG.baseUrl);
+    await authPage.waitForLoadState('domcontentloaded');
+    await loginPage.login(CONFIG.testUsername, CONFIG.testPassword);
+
+    console.log('Login completed and stored');
   });
 
-  test('TC-001: Search for T-shirts and verify Faded Short Sleeve T-shirt', async ({ page }) => {
-    // Act
-    await homePage.searchProduct('T-shirts');
-
-    // Assert
-    const productExists = await homePage.verifyProductExists('Faded Short Sleeve T-Shirt');
-    expect(productExists).toBe(true);
+  test.afterAll(async () => {
+    // Close the authenticated page after all tests
+    await authPage.close();
   });
 
-  test('TC-002: Get all products from search results', async ({ page }) => {
-    // Act
-    await homePage.searchProduct('T-shirts');
-    const products = await homePage.getAllProductNames();
-
-    // Assert
-    expect(products.length).toBeGreaterThan(0);
-    console.log('Found products:', products);
+  test('TC-001: User can login with valid credentials', async () => {
+    const url = authPage.url();
+    expect(url).toContain('dashboard');
   });
 
-  test('TC-003: Click on product and verify product page', async ({ page }) => {
-    // Act
-    await homePage.searchProduct('T-shirts');
-    await homePage.clickOnProduct('Faded Short Sleeve T-Shirt');
-    
-    const productPage = new ProductPage(page);
-    const title = await productPage.getProductTitle();
+  test('TC-002: Profile name is displayed after login', async () => {
+    const profileName = await dashboardPage.getLoggedInUserName();
+    expect(profileName).toBeTruthy();
+  });
 
-    // Assert
-    expect(title).toContain('Faded Short Sleeve T-Shirt');
+  test('TC-003: Dashboard admin menu is visible after login', async () => {
+    const isVisible = await dashboardPage.adminLink.isVisible();
+    expect(isVisible).toBe(true);
+  });
+
+  test('TC-004: Dashboard page URL verified', async () => {
+    const url = authPage.url();
+    expect(url).toMatch(/dashboard/);
+  });
+
+  test('TC-005: Multiple dashboard menu items visible after login', async () => {
+    const adminVisible = await dashboardPage.adminLink.isVisible();
+    const pimVisible = await dashboardPage.pimLink.isVisible();
+    const leaveVisible = await dashboardPage.leaveLink.isVisible();
+
+    expect(adminVisible).toBe(true);
+    expect(pimVisible).toBe(true);
+    expect(leaveVisible).toBe(true);
   });
 });

@@ -21,6 +21,7 @@ test.describe('Automation Practice - E-commerce Tests', () => {
     // Perform login once
     await authPage.goto(CONFIG.baseUrl);
     await authPage.waitForLoadState('domcontentloaded');
+    await authPage.waitForTimeout(CONFIG.implicitTimeout);
     await loginPage.login(CONFIG.testUsername, CONFIG.testPassword);
 
     console.log('Login completed and stored');

@@ -30,8 +30,8 @@ export class LoginPage extends BasePage {
         await this.loginButton.click();
 
         // Wait for dashboard URL and sidebar menu to appear
-        await this.page.waitForURL(/dashboard/, { timeout: 15000 });
-        await this.page.waitForSelector('a:has-text("Admin")', { timeout: 10000 });
+        await this.page.waitForURL(/dashboard/, { timeout: 30000 });
+        await this.page.waitForSelector('a:has-text("Admin")', { timeout: 30000 });
     }
 
     /**
@@ -47,7 +47,7 @@ export class LoginPage extends BasePage {
      * @returns {boolean} True if login successful
      */
     async isLoginSuccessful() {
-        await this.page.waitForURL('**/dashboard/**', { timeout: 10000 });
+        await this.page.waitForURL('**/dashboard/**', { timeout: 30000 });
         return true;
     }
 

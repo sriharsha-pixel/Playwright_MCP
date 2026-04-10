@@ -29,8 +29,8 @@ export class DashboardPage extends BasePage {
      * @returns {boolean} True if dashboard loaded
      */
     async isDashboardLoaded() {
-        await this.page.waitForLoadState('networkidle');
-        return this.page.url().includes('dashboard');
+        await this.waitForPageLoad();
+        return this.isUrlContains('dashboard');
     }
 
     /**
@@ -39,7 +39,7 @@ export class DashboardPage extends BasePage {
      */
     async isSidebarVisible() {
         try {
-            return await this.sidebar.isVisible();
+            return await this.isVisible(this.sidebar);
         } catch {
             return false;
         }
@@ -50,7 +50,7 @@ export class DashboardPage extends BasePage {
      * @returns {string} User name
      */
     async getLoggedInUserName() {
-        return await this.profileName.textContent();
+        return await this.getText(this.profileName);
     }
 
     // ==================== Navigation ====================
@@ -60,41 +60,41 @@ export class DashboardPage extends BasePage {
      * @param {string} menuName - Menu name
      */
     async clickMenu(menuName) {
-        const menuLocator = this.page.locator(`//a[contains(text(), "${menuName}")]`);
-        await menuLocator.click();
-        await this.page.waitForLoadState('networkidle');
+        const menuLocator = await this.getLocator(`//a[contains(text(), "${menuName}")]`);
+        await this.click(menuLocator);
+        await this.waitForPageLoad();
     }
 
     /**
      * Navigate to Admin
      */
     async goToAdmin() {
-        await this.adminLink.click();
-        await this.page.waitForLoadState('networkidle');
+        await this.click(this.adminLink);
+        await this.waitForPageLoad();
     }
 
     /**
      * Navigate to PIM
      */
     async goToPIM() {
-        await this.pimLink.click();
-        await this.page.waitForLoadState('networkidle');
+        await this.click(this.pimLink);
+        await this.waitForPageLoad();
     }
 
     /**
      * Navigate to Leave
      */
     async goToLeave() {
-        await this.leaveLink.click();
-        await this.page.waitForLoadState('networkidle');
+        await this.click(this.leaveLink);
+        await this.waitForPageLoad();
     }
 
     /**
      * Navigate to Dashboard
      */
     async goToDashboard() {
-        await this.dashboardLink.click();
-        await this.page.waitForLoadState('networkidle');
+        await this.click(this.dashboardLink);
+        await this.waitForPageLoad();
     }
 
     // ==================== Logout ====================
@@ -103,27 +103,10 @@ export class DashboardPage extends BasePage {
      * Perform logout
      */
     async logout() {
-        await this.profileImage.click();
-        await this.logoutButton.waitFor({ state: 'visible' });
-        await this.logoutButton.click();
-        await this.page.waitForLoadState('networkidle');
-    }
-
-    /**
-     * Get current page URL
-     * @returns {string} Current URL
-     */
-    async getCurrentUrl() {
-        return this.page.url();
-    }
-
-    /**
-     * Check if URL contains text
-     * @param {string} text - Text to check
-     * @returns {boolean} True if URL contains text
-     */
-    async isUrlContains(text) {
-        return this.page.url().includes(text);
+        await this.click(this.profileImage);
+        await this.waitForElementVisible(this.logoutButton, 30000);
+        await this.click(this.logoutButton);
+        await this.waitForPageLoad();
     }
 
     // ==================== Widgets ====================

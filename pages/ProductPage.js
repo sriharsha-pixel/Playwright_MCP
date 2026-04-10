@@ -7,7 +7,7 @@ import { BasePage } from './BasePage.js';
 export class ProductPage extends BasePage {
   constructor(page) {
     super(page);
-    
+
     // ==================== Locators ====================
     this.productTitle = page.locator('h1[itemprop="name"]');
     this.productPrice = page.locator('span[id*="our_price"]');
@@ -21,29 +21,29 @@ export class ProductPage extends BasePage {
    * Get product title
    */
   async getProductTitle() {
-    return await this.productTitle.textContent();
+    return await this.getText(this.productTitle);
   }
 
   /**
    * Get product price
    */
   async getProductPrice() {
-    return await this.productPrice.textContent();
+    return await this.getText(this.productPrice);
   }
 
   /**
    * Get product description
    */
   async getProductDescription() {
-    return await this.productDescription.textContent();
+    return await this.getText(this.productDescription);
   }
 
   /**
    * Add product to cart
    */
   async addToCart() {
-    await this.addToCartButton.click();
-    await this.page.waitForLoadState('networkidle');
+    await this.click(this.addToCartButton);
+    await this.waitForPageLoad();
   }
 
   /**
@@ -51,14 +51,14 @@ export class ProductPage extends BasePage {
    * @param {number} quantity - The quantity to set
    */
   async setQuantity(quantity) {
-    await this.productQuantity.fill(quantity.toString());
+    await this.fillInput(this.productQuantity, quantity.toString());
   }
 
   /**
    * Get product quantity
    */
   async getQuantity() {
-    return await this.productQuantity.inputValue();
+    return await this.getValue(this.productQuantity);
   }
 
   /**
@@ -66,36 +66,36 @@ export class ProductPage extends BasePage {
    * @param {string} expectedText - The expected text
    */
   async verifyProductTitle(expectedText) {
-    const title = await this.getProductTitle();
-    return title.includes(expectedText);
+    return await this.verifyElementContainsText(this.productTitle, expectedText);
   }
 
   /**
    * Check if product image is visible
    */
   async isProductImageVisible() {
-    return await this.productImage.isVisible();
+    return await this.isVisible(this.productImage);
   }
 
   /**
    * Check if product details are loaded
    */
   async areProductDetailsLoaded() {
-    return await this.productTitle.isVisible();
+    return await this.isVisible(this.productTitle) &&
+      await this.isVisible(this.productPrice) &&
+      await this.isVisible(this.productDescription);
   }
 
   /**
    * Check if add to cart button is visible
    */
   async isAddToCartButtonVisible() {
-    return await this.addToCartButton.isVisible();
+    return await this.isVisible(this.addToCartButton);
   }
 
   /**
    * Go back to products page
    */
   async goBackToProducts() {
-    await this.page.goBack();
-    await this.page.waitForLoadState('networkidle');
+    await this.goBack();
   }
 }

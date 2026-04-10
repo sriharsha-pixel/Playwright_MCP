@@ -25,21 +25,21 @@ export class LoginPage extends BasePage {
      * @param {string} password - Password
      */
     async login(username, password) {
-        await this.usernameField.fill(username);
-        await this.passwordField.fill(password);
-        await this.loginButton.click();
+        await this.fillInput(this.usernameField, username);
+        await this.fillInput(this.passwordField, password);
+        await this.click(this.loginButton);
 
         // Wait for dashboard URL and sidebar menu to appear
         await this.page.waitForURL(/dashboard/, { timeout: 30000 });
-        await this.page.waitForSelector('a:has-text("Admin")', { timeout: 30000 });
+        await this.waitForElementVisible(this.page.locator('a:has-text("Admin")'), 30000);
     }
 
     /**
      * Click login button
      */
     async clickLoginButton() {
-        await this.loginButton.click();
-        await this.page.waitForLoadState('networkidle');
+        await this.click(this.loginButton);
+        await this.waitForPageLoad();
     }
 
     /**
@@ -47,7 +47,7 @@ export class LoginPage extends BasePage {
      * @returns {boolean} True if login successful
      */
     async isLoginSuccessful() {
-        await this.page.waitForURL('**/dashboard/**', { timeout: 30000 });
+        await this.page.waitForURL('/dashboard/', { timeout: 30000 });
         return true;
     }
 
@@ -56,7 +56,7 @@ export class LoginPage extends BasePage {
      * @returns {string} Error message text
      */
     async getErrorMessage() {
-        return await this.errorMessage.textContent();
+        return await this.getText(this.errorMessage);
     }
 
     // ==================== Navigation ====================
@@ -65,7 +65,7 @@ export class LoginPage extends BasePage {
      * Navigate to login page
      */
     async goToLoginPage(baseUrl) {
-        await this.page.goto(baseUrl);
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.navigateTo(baseUrl);
+        await this.waitForPageLoad('domcontentloaded');
     }
 }

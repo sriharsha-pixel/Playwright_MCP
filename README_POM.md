@@ -62,27 +62,27 @@ npx playwright test
 
 ### Run specific test file
 ```powershell
-npx playwright test tests/pom.spec.js
+npx playwright test tests/ui/uiTest.spec.js
 ```
 
 ### Run in headed mode (visible browser)
 ```powershell
-npx playwright test tests/pom.spec.js --headed
+npx playwright test tests/ui/uiTest.spec.js --headed
 ```
 
 ### Run in specific browser
 ```powershell
-npx playwright test tests/pom.spec.js --project=chromium
+npx playwright test tests/ui/uiTest.spec.js --project=chromium
 ```
 
 ### Run with headed mode in chromium
 ```powershell
-npx playwright test tests/pom.spec.js --project=chromium --headed
+npx playwright test tests/ui/uiTest.spec.js --project=chromium --headed
 ```
 
 ### Debug mode
 ```powershell
-npx playwright test tests/pom.spec.js --debug
+npx playwright test tests/ui/uiTest.spec.js --debug
 ```
 
 ## Test Examples
